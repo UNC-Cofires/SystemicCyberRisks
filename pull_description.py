@@ -2,36 +2,55 @@ import os
 import json
 import pandas as pd
 
-# Load CSV and normalize CVE IDs
-csv_path = 'vulnerabilities_2025.csv'
-df = pd.read_csv(csv_path)
-df['id'] = df['id'].astype(str).str.strip().str.upper()
+all_data = []
 
-# Directory containing all CVE folders and JSON files
-root_dir = 'cves/2025'
+# Loop through each year
+for year in range(1999, 2026):
+    csv_path = f'vulnerabilities_{year}.csv'
+    root_dir = f'cves/{year}'
 
-# Collect descriptions from JSON files
-cve_descriptions = {}
-target_cves = set(df['id'])
+    # Skip if CSV or JSON directory doesn't exist
+    if not os.path.exists(csv_path):
+        print(f"Skipping {year} — CSV not found.")
+        continue
+    if not os.path.exists(root_dir):
+        print(f"Skipping {year} — JSON directory not found.")
+        continue
 
-for subdir, _, files in os.walk(root_dir):
-    for file in files:
-        if not file.endswith('.json'):
-            continue
+    # Load CSV 
+    df = pd.read_csv(csv_path, low_memory=False)
+    target_cves = set(df['id'])
+    cve_descriptions = {}
 
-        cve_id = file.replace('.json', '').strip().upper()
-        if cve_id not in target_cves:
-            continue
+    # Walk through JSON files
+    for subdir, _, files in os.walk(root_dir):
+        for file in files:
+            if not file.endswith('.json'):
+                continue
 
-        try:
-            with open(os.path.join(subdir, file), 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                descriptions = data.get("containers", {}).get("cna", {}).get("descriptions", [])
-                value = next((desc.get("value", "") for desc in descriptions if desc.get("value")), "")
-                cve_descriptions[cve_id] = value
-        except:
-            pass  # Skip files that can't be read
+            cve_id = file.replace('.json', '').strip().upper()
+            if cve_id not in target_cves:
+                continue
 
-# Add description to DataFrame and save
-df['description'] = df['id'].map(cve_descriptions)
-df.to_csv('vulnerabilities_2025_with_descriptions.csv', index=False)
+            try:
+                with open(os.path.join(subdir, file), 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    descriptions = data.get("containers", {}).get("cna", {}).get("descriptions", [])
+                    value = next((desc.get("value", "") for desc in descriptions if desc.get("value")), "")
+                    cve_descriptions[cve_id] = value
+            except:
+                pass
+
+    # Add description
+    df['description'] = df['id'].map(cve_descriptions)
+
+    # Append to full list
+    all_data.append(df)
+    print(f"Processed year: {year} with {len(df)} entries.")
+
+# Combine all years into a single DataFrame
+combined_df = pd.concat(all_data, ignore_index=True)
+
+# Save the full dataset
+combined_df.to_csv('vulnerabilities.csv', index=False)
+print(f"\nCombined dataset saved to: vulnerabilities.csv")
