@@ -2,25 +2,26 @@ import os
 import json
 import pandas as pd
 
-all_data = []
+# Load the merged vulnerabilities file
+if not os.path.exists('vulnerabilities.csv'):
+    print("Error: vulnerabilities.csv not found. Please run merge_files.py first.")
+    exit(1)
 
-# Loop through each year
+df = pd.read_csv('vulnerabilities.csv', low_memory=False)
+target_cves = set(df['id'])
+cve_descriptions = {}
+
+print(f"Processing {len(target_cves)} CVEs for descriptions...")
+
+# Loop through each year directory to find JSON files
 for year in range(1999, 2026):
-    csv_path = f'vulnerabilities_{year}.csv'
     root_dir = f'cves/{year}'
-
-    # Skip if CSV or JSON directory doesn't exist
-    if not os.path.exists(csv_path):
-        print(f"Skipping {year} — CSV not found.")
-        continue
+    
+    # Skip if JSON directory doesn't exist
     if not os.path.exists(root_dir):
-        print(f"Skipping {year} — JSON directory not found.")
         continue
 
-    # Load CSV 
-    df = pd.read_csv(csv_path, low_memory=False)
-    target_cves = set(df['id'])
-    cve_descriptions = {}
+    print(f"Searching year {year} directory...")
 
     # Walk through JSON files
     for subdir, _, files in os.walk(root_dir):
@@ -41,16 +42,10 @@ for year in range(1999, 2026):
             except:
                 pass
 
-    # Add description
-    df['description'] = df['id'].map(cve_descriptions)
+# Add description column to the dataframe
+df['description'] = df['id'].map(cve_descriptions)
 
-    # Append to full list
-    all_data.append(df)
-    print(f"Processed year: {year} with {len(df)} entries.")
-
-# Combine all years into a single DataFrame
-combined_df = pd.concat(all_data, ignore_index=True)
-
-# Save the full dataset
-combined_df.to_csv('vulnerabilities.csv', index=False)
-print(f"\nCombined dataset saved to: vulnerabilities.csv")
+# Save the updated dataset with descriptions
+df.to_csv('vulnerabilities.csv', index=False)
+print(f"\nUpdated dataset with descriptions saved to: vulnerabilities.csv")
+print(f"Found descriptions for {len(cve_descriptions)} out of {len(target_cves)} CVEs")
