@@ -11,7 +11,7 @@ df = df.drop(columns=['Unnamed: 0', 'userInteractions', 'accessVector', 'accessC
                       'modifiedPrivilegesRequired', 'modifiedUserInteraction', 'modifiedVulnConfidentialityImpact', 
                       'modifiedVulnIntegrityImpact', 'modifiedVulnAvailabilityImpact', 'modifiedSubConfidentialityImpact', 
                       'modifiedSubIntegrityImpact', 'modifiedSubAvailabilityImpact', 'Safety','Automatable', 'Recovery', 
-                      'valueDensity', 'vulnerabilityResponseEffort', 'providerUrgency', 'vectorString', 'description'])
+                      'valueDensity', 'vulnerabilityResponseEffort', 'providerUrgency', 'vectorString'])
 
 # Drop version 4, and keep only 1 of each CveID
 df = df[df['version'] != 4.0].copy()
@@ -20,7 +20,7 @@ df = df.drop_duplicates(subset=['id'], keep='last')
 # Extract the year from the 'id' column
 df['year'] = df['id'].str.extract(r'CVE-(\d{4})-')[0].astype(int)
 
-# drop evrtyhting from 2015 and before
+# drop everyhting from 2015 and before
 df = df[df['year'] > 2015]
 
 # read targets
