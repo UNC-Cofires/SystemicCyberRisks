@@ -18,6 +18,9 @@ This repository contains the following components:
 - `modeling/baseline_model.py` - Creates baseline machine learning model
 - `modeling/pull_description.py` - Extracts vulnerability descriptions
 
+### Analysis and Exploration
+- `notebooks/EDA.ipynb` - Exploratory Data Analysis notebook for understanding the vulnerability dataset
+
 
 
 ## Getting Started
