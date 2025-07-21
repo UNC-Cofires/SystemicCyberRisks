@@ -15,7 +15,7 @@ df = df.drop(columns=['Unnamed: 0', 'userInteractions', 'accessVector', 'accessC
 
 # Drop version 4, and keep only 1 of each CveID
 df = df[df['version'] != 4.0].copy()
-df = df.drop_duplicates(subset=['id'], keep='last')
+df = df.drop_duplicates(subset=['id'], keep='first')
 
 # Extract the year from the 'id' column
 df['year'] = df['id'].str.extract(r'CVE-(\d{4})-')[0].astype(int)

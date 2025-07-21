@@ -20,7 +20,12 @@ This repository contains the following components:
 
 ### Analysis and Exploration
 - `notebooks/EDA.ipynb` - Exploratory Data Analysis notebook for understanding the vulnerability dataset
-
+- `notebooks/Baseline_Model/` - Collection of modeling notebooks for comprehensive analysis:
+  - `0_Data_Loading_and_EDA.ipynb` - Data loading and exploratory data analysis
+  - `1_Data_Preprocessing.ipynb` - Data preprocessing and feature engineering
+  - `2_Baseline_Modeling.ipynb` - Baseline model development
+  - `3_Advanced_Modeling.ipynb` - Advanced modeling techniques
+  - `4_Cross_Validation.ipynb` - Model validation and performance evaluation
 
 
 ## Getting Started
@@ -76,9 +81,11 @@ python -W ignore read_nvd_api.py 2024
 
 ## Creating the Baseline Model
 
+**Important:** Before running any modeling scripts, ensure that you have completed the data collection process using `read_nvd_api.py` and that all individual year files have been created.
+
 To generate the baseline model for systemic cyber risk evaluation, follow these steps in order:
 
-1. **First, merge the data files:**
+1. **First, merge the data files (required for all subsequent steps):**
    ```
    python modeling/merge_files.py
    ```
@@ -93,5 +100,16 @@ To generate the baseline model for systemic cyber risk evaluation, follow these 
    python modeling/baseline_model.py
    ```
 
-These scripts should be run in sequence as each step depends on the output of the previous step. The baseline model will provide a foundation for evaluating systemic cyber risks based on the collected vulnerability data.
+These scripts should be run in sequence as each step depends on the output of the previous step.
+
+## Using the Modeling Notebooks
+
+After completing the baseline model creation (specifically after running `modeling/merge_files.py`), you can explore the comprehensive modeling notebooks located in `notebooks/Baseline_Model/`. These notebooks provide:
+
+- Detailed exploratory data analysis
+- Step-by-step data preprocessing workflows
+- Multiple modeling approaches and comparisons
+- Cross-validation and performance evaluation
+
+Run the notebooks in numerical order (0 through 4) for the complete modeling workflow. These notebooks offer a more interactive and detailed approach to the modeling process compared to the standalone Python scripts.
 
