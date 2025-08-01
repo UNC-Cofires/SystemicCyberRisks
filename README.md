@@ -19,13 +19,8 @@ This repository contains the following components:
 
 ### Data Storage
 - `data/` - Directory containing all data files:
-  - `vulnerabilities.csv` - Raw merged vulnerability dataset (from generate_data pipeline)
-  - `data.csv` - Cleaned and preprocessed data (for modeling)
+  - `vulnerabilities.csv.gz` - Compressed version of vulnerability dataset (from generate_data pipeline)
   - `known_exploited_vulnerabilities.csv` - CISA KEV catalog (target labels)
-  - `processed_vulnerabilities.csv` - Processed dataset from notebooks
-  - `processed_vulnerabilities_features.csv` - Feature-engineered dataset from notebooks
-  - `vulnerabilities_*.csv` - Annual vulnerability files (1999-2025)
-  - `roc_curve.png` - Model performance visualization
 
 ### Modeling and Analysis
 - `modeling/baseline_model_abel_koshy_07_25.py` - Combined data cleaning and baseline modeling script
@@ -37,10 +32,6 @@ This repository contains the following components:
     - `2_Baseline_Modeling.ipynb` - Baseline model development
     - `3_Advanced_Modeling.ipynb` - Advanced modeling techniques
     - `4_Cross_Validation.ipynb` - Model validation and performance evaluation
-
-### Additional Resources
-- `keyword_generator.py` - Utility for generating vulnerability-related keywords
-- `RAG Ingestion Material/` - MITRE ATT&CK framework data for RAG systems
 
 ## Getting Started
 
