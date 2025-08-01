@@ -23,7 +23,7 @@ try:
   years_to_query = [sys.argv[1], ]
 except:
   years_to_query = np.arange(1999, 2026)  
-cve_dir = 'cves' # directory with cveV5 data
+cve_dir = '../cves' # directory with cveV5 data - adjusted for subdirectory
 
 # API key (allows 50 queries every 30 seconds instead of 5)
 API_KEY = 'c144f37f-5d22-4998-8dfb-af9338ecfa15'
@@ -168,5 +168,5 @@ for year in years_to_query:
           else:
             # print out non-published CVEs (should be 'REJECTED')
             print(cve_data['cveMetadata']['state'])
-  # save dataframe for each year
-  this_year_file.to_csv('vulnerabilities_' + str(year) + '.csv')
+  # save dataframe for each year - adjusted path for subdirectory
+  this_year_file.to_csv('../data/vulnerabilities_' + str(year) + '.csv') 

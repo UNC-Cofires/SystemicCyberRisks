@@ -2,12 +2,12 @@ import os
 import json
 import pandas as pd
 
-# Load the merged vulnerabilities file
-if not os.path.exists('vulnerabilities.csv'):
-    print("Error: vulnerabilities.csv not found. Please run merge_files.py first.")
+# Load the merged vulnerabilities file - adjusted path for subdirectory
+if not os.path.exists('../data/vulnerabilities.csv'):
+    print("Error: ../data/vulnerabilities.csv not found. Please run merge_files.py first.")
     exit(1)
 
-df = pd.read_csv('vulnerabilities.csv', low_memory=False)
+df = pd.read_csv('../data/vulnerabilities.csv', low_memory=False)
 target_cves = set(df['id'])
 cve_descriptions = {}
 
@@ -15,7 +15,7 @@ print(f"Processing {len(target_cves)} CVEs for descriptions...")
 
 # Loop through each year directory to find JSON files
 for year in range(1999, 2026):
-    root_dir = f'cves/{year}'
+    root_dir = f'../cves/{year}'  # adjusted path for subdirectory
     
     # Skip if JSON directory doesn't exist
     if not os.path.exists(root_dir):
@@ -45,7 +45,7 @@ for year in range(1999, 2026):
 # Add description column to the dataframe
 df['description'] = df['id'].map(cve_descriptions)
 
-# Save the updated dataset with descriptions
-df.to_csv('vulnerabilities.csv', index=False)
-print(f"\nUpdated dataset with descriptions saved to: vulnerabilities.csv")
-print(f"Found descriptions for {len(cve_descriptions)} out of {len(target_cves)} CVEs")
+# Save the updated dataset with descriptions - adjusted path for subdirectory
+df.to_csv('../data/vulnerabilities.csv', index=False)
+print(f"\nUpdated dataset with descriptions saved to: ../data/vulnerabilities.csv")
+print(f"Found descriptions for {len(cve_descriptions)} out of {len(target_cves)} CVEs") 
