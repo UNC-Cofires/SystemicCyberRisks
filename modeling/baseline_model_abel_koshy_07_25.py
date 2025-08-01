@@ -12,6 +12,7 @@ Output: data/data.csv (cleaned data) + model evaluation + ROC curve
 
 import pandas as pd 
 import matplotlib.pyplot as plt
+import os
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -29,7 +30,7 @@ print("📂 Loading raw vulnerability data...")
 # Load vulnerabilities data (handle both .csv and .csv.gz)
 if os.path.exists('data/vulnerabilities.csv'):
     df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
-elif os.path.exists('data/vulnerabilities.csv.gz'):
+if os.path.exists('data/vulnerabilities.csv.gz'):
     import gzip
     df = pd.read_csv('data/vulnerabilities.csv.gz', compression='gzip', low_memory=False)
 else:
