@@ -30,7 +30,7 @@ print("📂 Loading raw vulnerability data...")
 # Load vulnerabilities data (handle both .csv and .csv.gz)
 if os.path.exists('data/vulnerabilities.csv'):
     df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
-if os.path.exists('data/vulnerabilities.csv.gz'):
+elif os.path.exists('data/vulnerabilities.csv.gz'):
     import gzip
     df = pd.read_csv('data/vulnerabilities.csv.gz', compression='gzip', low_memory=False)
 else:
