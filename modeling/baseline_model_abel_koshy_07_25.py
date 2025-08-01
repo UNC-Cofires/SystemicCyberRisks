@@ -26,7 +26,14 @@ print("="*60)
 
 # Read the raw CSV file and drop unwanted columns
 print("📂 Loading raw vulnerability data...")
-df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
+# Load vulnerabilities data (handle both .csv and .csv.gz)
+if os.path.exists('data/vulnerabilities.csv'):
+    df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
+elif os.path.exists('data/vulnerabilities.csv.gz'):
+    import gzip
+    df = pd.read_csv('data/vulnerabilities.csv.gz', compression='gzip', low_memory=False)
+else:
+    raise FileNotFoundError("Neither data/vulnerabilities.csv nor data/vulnerabilities.csv.gz found!")
 print(f"   Initial data shape: {df.shape}")
 
 print("🗑️  Dropping unwanted columns...")
