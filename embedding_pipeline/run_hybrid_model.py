@@ -268,12 +268,12 @@ print("TEMPORAL TRAIN/TEST SPLIT")
 print("="*70)
 
 # Create temporal split
-train_mask = years < 2025
-test_mask = years == 2025
+train_mask = years < 2024
+test_mask = years >= 2024
 
 print(f"\n📊 Split configuration:")
-print(f"   Training: 2015-2024")
-print(f"   Testing: 2025")
+print(f"   Training: 2015-2023")
+print(f"   Testing: 2024+")
 
 # Split all feature sets
 X_cvss_train, X_cvss_test = cvss_features[train_mask], cvss_features[test_mask]
@@ -292,7 +292,7 @@ print(f"\n📊 Year distribution:")
 year_df = pd.DataFrame({'year': years, 'target': y})
 for year in sorted(year_df['year'].unique()):
     year_data = year_df[year_df['year'] == year]
-    split_type = 'TRAIN' if year < 2025 else 'TEST '
+    split_type = 'TRAIN' if year < 2024 else 'TEST '
     print(f"   [{split_type}] {year}: {len(year_data):,} CVEs ({year_data['target'].sum()} exploited)")
 
 print("\n✅ Train/test split complete!")
@@ -503,6 +503,42 @@ plt.tight_layout()
 pr_path = vis_dir / 'hybrid_precision_recall_curves.png'
 plt.savefig(pr_path, dpi=150, bbox_inches='tight')
 print(f"   Saved: {pr_path}")
+plt.close()
+
+# Confusion Matrices for all 3 models
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+# CVSS-only CM
+cm_cvss = confusion_matrix(y_test, results['CVSS-only']['y_pred'])
+sns.heatmap(cm_cvss, annot=True, fmt='d', cmap='Blues', ax=axes[0], cbar=True)
+axes[0].set_xlabel('Predicted Label', fontsize=12)
+axes[0].set_ylabel('True Label', fontsize=12)
+axes[0].set_title('Confusion Matrix - CVSS-only', fontsize=14, fontweight='bold')
+axes[0].set_xticklabels(['Not Exploited', 'Exploited'])
+axes[0].set_yticklabels(['Not Exploited', 'Exploited'])
+
+# Embedding-only CM
+cm_emb = confusion_matrix(y_test, results['Embedding-only']['y_pred'])
+sns.heatmap(cm_emb, annot=True, fmt='d', cmap='Greens', ax=axes[1], cbar=True)
+axes[1].set_xlabel('Predicted Label', fontsize=12)
+axes[1].set_ylabel('True Label', fontsize=12)
+axes[1].set_title('Confusion Matrix - Embedding-only', fontsize=14, fontweight='bold')
+axes[1].set_xticklabels(['Not Exploited', 'Exploited'])
+axes[1].set_yticklabels(['Not Exploited', 'Exploited'])
+
+# Hybrid CM
+cm_hybrid = confusion_matrix(y_test, results['Hybrid']['y_pred'])
+sns.heatmap(cm_hybrid, annot=True, fmt='d', cmap='Oranges', ax=axes[2], cbar=True)
+axes[2].set_xlabel('Predicted Label', fontsize=12)
+axes[2].set_ylabel('True Label', fontsize=12)
+axes[2].set_title('Confusion Matrix - Hybrid', fontsize=14, fontweight='bold')
+axes[2].set_xticklabels(['Not Exploited', 'Exploited'])
+axes[2].set_yticklabels(['Not Exploited', 'Exploited'])
+
+plt.tight_layout()
+cm_path = vis_dir / 'hybrid_confusion_matrices.png'
+plt.savefig(cm_path, dpi=150, bbox_inches='tight')
+print(f"   Saved: {cm_path}")
 plt.close()
 
 # Performance Bar Chart

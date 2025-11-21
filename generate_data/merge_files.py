@@ -23,5 +23,5 @@ for year in range(1999, 2026):
 combined_df = pd.concat(all_data, ignore_index=True)
 
 # Save the merged dataset - adjusted path for subdirectory
-combined_df.to_csv('../data/vulnerabilities.csv', index=False)
-print(f"\nMerged dataset saved to: ../data/vulnerabilities.csv") 
+combined_df.to_parquet('../data/vulnerabilities.parquet', engine='pyarrow', compression='snappy', index=False)
+print(f"\nMerged dataset saved to: ../data/vulnerabilities.parquet") 

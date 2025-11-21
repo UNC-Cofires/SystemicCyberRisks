@@ -23,8 +23,8 @@ os.makedirs('embedding_pipeline/data', exist_ok=True)
 
 # Load the raw vulnerability dataset
 print("\n📂 Loading vulnerability dataset...")
-if os.path.exists('data/vulnerabilities.csv.gz'):
-    df = pd.read_csv('data/vulnerabilities.csv.gz', compression='gzip', low_memory=False)
+if os.path.exists('data/vulnerabilities.parquet'):
+    df = pd.read_parquet('data/vulnerabilities.parquet')
 elif os.path.exists('data/vulnerabilities.csv'):
     df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
 else:

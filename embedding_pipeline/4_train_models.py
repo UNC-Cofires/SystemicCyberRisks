@@ -5,8 +5,8 @@ Train Models on Embeddings
 Trains both Logistic Regression and Random Forest classifiers on embeddings
 to predict vulnerability exploitation using temporal train/test split.
 
-Train: 2015-2024 data
-Test:  2025 data
+Train: 2015-2023 data
+Test:  2024+ data
 
 Supports both OpenAI and Sentence Transformer embeddings.
 
@@ -72,13 +72,13 @@ metadata = pd.read_csv(metadata_path)
 print(f"   Loaded embeddings: {embeddings.shape}")
 print(f"   Loaded metadata: {len(metadata):,} records")
 
-# Temporal train/test split: 2015-2024 for training, 2025 for testing
+# Temporal train/test split: 2015-2023 for training, 2024+ for testing
 print(f"\n🔄 Creating temporal train/test split...")
-print(f"   Training set: 2015-2024")
-print(f"   Test set: 2025")
+print(f"   Training set: 2015-2023")
+print(f"   Test set: 2024+")
 
-train_mask = metadata['year'] < 2025
-test_mask = metadata['year'] == 2025
+train_mask = metadata['year'] < 2024
+test_mask = metadata['year'] >= 2024
 
 X_train = embeddings[train_mask]
 y_train = metadata.loc[train_mask, 'target'].values
@@ -340,8 +340,8 @@ results = {
         'test_size': int(len(X_test)),
         'train_exploited': int(y_train.sum()),
         'test_exploited': int(y_test.sum()),
-        'train_years': '2015-2024',
-        'test_year': '2025'
+        'train_years': '2015-2023',
+        'test_years': '2024+'
     },
     'logistic_regression': {
         'roc_auc': float(lr_roc_auc),
@@ -384,7 +384,7 @@ print("=" * 70)
 # Final summary
 print(f"\n🎉 FINAL SUMMARY:")
 print(f"\n   Embedding Type: {embedding_type.upper()}")
-print(f"   Train/Test Split: 2015-2024 / 2025")
+print(f"   Train/Test Split: 2015-2023 / 2024+")
 print(f"\n   🏆 BEST MODEL (by ROC-AUC): {winner}")
 print(f"\n   Logistic Regression ROC-AUC: {lr_roc_auc:.4f}")
 print(f"   Random Forest ROC-AUC: {rf_roc_auc:.4f}")

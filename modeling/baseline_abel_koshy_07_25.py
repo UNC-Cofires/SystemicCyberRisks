@@ -16,7 +16,8 @@ import os
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, roc_curve, roc_auc_score
+from sklearn.metrics import classification_report, roc_curve, roc_auc_score, confusion_matrix
+import seaborn as sns
 
 print("🧹 Starting Data Cleaning Phase...")
 print("="*60)
@@ -25,16 +26,15 @@ print("="*60)
 # DATA CLEANING PHASE
 # =============================================================================
 
-# Read the raw CSV file and drop unwanted columns
+# Read the raw Parquet file and drop unwanted columns
 print("📂 Loading raw vulnerability data...")
-# Load vulnerabilities data (handle both .csv and .csv.gz)
-if os.path.exists('data/vulnerabilities.csv'):
+# Load vulnerabilities data from Parquet format
+if os.path.exists('data/vulnerabilities.parquet'):
+    df = pd.read_parquet('data/vulnerabilities.parquet')
+elif os.path.exists('data/vulnerabilities.csv'):
     df = pd.read_csv('data/vulnerabilities.csv', low_memory=False)
-elif os.path.exists('data/vulnerabilities.csv.gz'):
-    import gzip
-    df = pd.read_csv('data/vulnerabilities.csv.gz', compression='gzip', low_memory=False)
 else:
-    raise FileNotFoundError("Neither data/vulnerabilities.csv nor data/vulnerabilities.csv.gz found!")
+    raise FileNotFoundError("Neither data/vulnerabilities.parquet nor data/vulnerabilities.csv found!")
 print(f"   Initial data shape: {df.shape}")
 
 print("🗑️  Dropping unwanted columns...")
@@ -84,8 +84,8 @@ print(f"   Found {target_count} matches ({target_count/len(df)*100:.2f}% of data
 print("🔧 Filling null values...")
 df.fillna(0, inplace=True)
 
-# Drop remaining unwanted columns
-df = df.drop(columns=['version', 'year'])
+# Drop version column but KEEP year for temporal split
+df = df.drop(columns=['version'])
 
 # Save the cleaned data to a new CSV file
 print("💾 Saving cleaned data...")
@@ -157,20 +157,31 @@ print("\n🎯 Preparing Features and Target...")
 print("="*40)
 
 # Define features (X) and target (y)
-feature_cols = [col for col in data_final.columns if col not in ['id', 'target', 'description']]
+feature_cols = [col for col in data_final.columns if col not in ['id', 'target', 'description', 'year']]
 X = data_final[feature_cols]
 y = data_final['target']
+years = data_final['year']
 
 print(f"   Features: {len(feature_cols)} columns")
 print(f"   Samples: {len(X)} total")
 print(f"   Target distribution: {y.value_counts().to_dict()}")
 print(f"   Target balance: {y.mean()*100:.2f}% positive class")
 
-# Perform train-test split
-print("\n🔄 Splitting data...")
-X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
-print(f"   Training set: {len(X_train)} samples")
-print(f"   Test set: {len(X_test)} samples")
+# Perform temporal train-test split
+print("\n🔄 Creating temporal train-test split...")
+print(f"   Training: 2015-2023")
+print(f"   Testing: 2024+")
+
+train_mask = years < 2024
+test_mask = years >= 2024
+
+X_train = X[train_mask]
+X_test = X[test_mask]
+y_train = y[train_mask]
+y_test = y[test_mask]
+
+print(f"   Training set: {len(X_train)} samples ({y_train.sum()} exploited, {y_train.mean()*100:.2f}%)")
+print(f"   Test set: {len(X_test)} samples ({y_test.sum()} exploited, {y_test.mean()*100:.2f}%)")
 
 print("\n🏋️  Training Baseline Model...")
 print("="*40)
@@ -211,10 +222,28 @@ plt.grid(True)
 
 plt.savefig("roc_curve.png", dpi=300, bbox_inches="tight")
 print("💾 ROC curve saved to: roc_curve.png")
+plt.close()
+
+# Generate Confusion Matrix
+print("\n📊 Generating confusion matrix visualization...")
+cm = confusion_matrix(y_test, y_pred)
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=True)
+plt.xlabel('Predicted Label', fontsize=12)
+plt.ylabel('True Label', fontsize=12)
+plt.title('Confusion Matrix - CVSS Baseline Model', fontsize=14, fontweight='bold')
+plt.xticks([0.5, 1.5], ['Not Exploited', 'Exploited'])
+plt.yticks([0.5, 1.5], ['Not Exploited', 'Exploited'])
+
+plt.savefig("confusion_matrix_baseline.png", dpi=300, bbox_inches="tight")
+print("💾 Confusion matrix saved to: confusion_matrix_baseline.png")
+plt.close()
 
 print("\n🎉 BASELINE MODEL PIPELINE COMPLETED SUCCESSFULLY!")
 print("="*60)
 print("📊 Generated Files:")
 print("   - data/data.csv (cleaned dataset)")
-print("   - roc_curve.png (model performance visualization)")
+print("   - roc_curve.png (ROC curve visualization)")
+print("   - confusion_matrix_baseline.png (confusion matrix visualization)")
 print(f"📈 Final Model Performance: AUC = {roc_auc:.4f}") 

@@ -30,6 +30,8 @@ python embedding_pipeline/4_train_models.py --embedding-type sentencetransformer
 
 **Note**: Embedding generation takes 2-3 hours for 330K descriptions on Apple Silicon. Results include both Logistic Regression and Random Forest models with full performance comparison.
 
+**Train/Test Split**: All models use temporal split - training on 2015-2023 data, testing on 2024+ data.
+
 ### Data Generation Pipeline
 
 Generate the raw vulnerability dataset from CVE JSON files and NIST NVD API:
@@ -57,6 +59,7 @@ python modeling/baseline_abel_koshy_07_25.py
 Produces:
 - `data/data.csv` - Cleaned dataset
 - `roc_curve.png` - ROC curve visualization
+- `confusion_matrix_baseline.png` - Confusion matrix visualization
 - Console output with model metrics
 
 ### Interactive Analysis with Jupyter Notebooks
@@ -100,17 +103,18 @@ Both approaches predict the same target: CISA Known Exploited Vulnerabilities.
 
 ```
 ┌─────────────────┐
-│ 1. Data Gen     │  CVE JSON files → NVD API → vulnerabilities.csv.gz
+│ 1. Data Gen     │  CVE JSON files → NVD API → vulnerabilities.parquet
 └────────┬────────┘
          │
          ▼
 ┌─────────────────┐
-│ 2. Cleaning     │  vulnerabilities.csv.gz + KEV catalog → data.csv
+│ 2. Cleaning     │  vulnerabilities.parquet + KEV catalog → data.csv
 └────────┬────────┘         (filters post-2015, creates target labels)
          │
          ▼
 ┌─────────────────┐
 │ 3. Modeling     │  data.csv → feature engineering → trained models
+│                 │  (Temporal split: train 2015-2023, test 2024+)
 └─────────────────┘
 ```
 
@@ -138,7 +142,7 @@ embedding_pipeline/
 ├── 3a. OpenAI Embeddings       → text-embedding-3-small (1536-dim)
 ├── 3b. Sentence Transformers   → all-MiniLM-L6-v2 (384-dim, local)
 └── 4. Train Models             → Logistic Reg + Random Forest
-                                  Train: 2015-2024, Test: 2025
+                                  Train: 2015-2023, Test: 2024+
 ```
 
 **Key Differences from CVSS Approach:**
@@ -167,9 +171,10 @@ See `embedding_pipeline/README.md` for complete documentation.
 
 **modeling/baseline_abel_koshy_07_25.py**
 - Combined data cleaning + logistic regression baseline (single script execution)
-- Handles both `.csv` and `.csv.gz` input formats
+- Reads from `.parquet` format (fallback to `.csv`)
+- Uses temporal split: train 2015-2023, test 2024+
 - Uses `class_weight='balanced'` to handle class imbalance
-- Produces ROC curve visualization and classification report
+- Produces ROC curve, confusion matrix, and classification report
 
 **notebooks/Baseline_Model/** (5 notebooks in sequence)
 - `0_Data_Loading_and_EDA.ipynb`: Load raw data, filter to 2016+, create target variable, temporal analysis
@@ -194,7 +199,7 @@ See `embedding_pipeline/README.md` for complete documentation.
 
 ### Generated Data
 
-- `data/vulnerabilities.csv.gz` - Complete vulnerability dataset from generate_data pipeline
+- `data/vulnerabilities.parquet` - Complete vulnerability dataset from generate_data pipeline (Parquet format for efficient storage)
 - `data/data.csv` - Cleaned dataset ready for modeling (from baseline_model script)
 - `data/processed_vulnerabilities.csv` - Intermediate output from notebook 0 (filtered to 2016+)
 - `data/vulnerabilities_YYYY.csv` - Annual vulnerability files (intermediate from pipeline)
@@ -208,18 +213,20 @@ See `embedding_pipeline/README.md` for complete documentation.
 
 ### Output Files
 
-- `roc_curve.png` - Model performance visualization (from baseline_model script)
+- `roc_curve.png` - ROC curve visualization (from baseline_model script)
+- `confusion_matrix_baseline.png` - Confusion matrix visualization (from baseline_model script)
 - `extracted_keywords.csv` - RAG-extracted keywords (from keyword_generator.py)
 - `embedding_pipeline/results/results_*.json` - Detailed model metrics (LR + RF)
 - `embedding_pipeline/results/predictions_*.csv` - Test set predictions with probabilities
-- `embedding_pipeline/visualizations/*.png` - ROC curves, PR curves, confusion matrices, comparisons
+- `embedding_pipeline/visualizations/*.png` - ROC curves, PR curves, confusion matrices, model comparisons
+- `embedding_pipeline/visualizations/hybrid_confusion_matrices.png` - Confusion matrices for CVSS, Embedding, and Hybrid models
 
 ## Class Imbalance Handling
 
 The extreme class imbalance (~205:1 ratio) requires specialized techniques:
 
 1. **Class weighting**: Use `class_weight='balanced'` in scikit-learn models
-2. **Stratified splitting**: Always use `stratify=y` in train_test_split
+2. **Temporal splitting**: Train on 2015-2023, test on 2024+ (prevents data leakage and simulates real-world prediction)
 3. **Evaluation metrics**: Focus on ROC-AUC, precision-recall curves, not accuracy
 4. **Threshold tuning**: Optimize decision threshold for recall vs precision trade-off
 

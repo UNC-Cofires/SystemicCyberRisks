@@ -99,8 +99,7 @@ for i in tqdm(range(0, len(df), BATCH_SIZE), desc="   Embedding batches"):
                 failed_indices.append(i + j)
 
     # Rate limiting
-    \if i + BATCH_SIZE < leb v 
-    n(df):
+    if i + BATCH_SIZE < len(df):
         time.sleep(RATE_LIMIT_DELAY)
 
 # Convert to numpy array
