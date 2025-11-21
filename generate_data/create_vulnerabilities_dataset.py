@@ -7,7 +7,7 @@ This script runs the complete data generation pipeline in the correct sequence:
 2. merge_files.py - Merge annual vulnerability files into a single dataset
 3. pull_description.py - Extract and add vulnerability descriptions
 
-The final output will be saved to ../data/vulnerabilities.csv
+The final output will be saved to ../data/vulnerabilities.parquet
 """
 
 import subprocess
@@ -86,11 +86,10 @@ def main():
     seconds = int(runtime % 60)
     
     print(f"\n🎉 PIPELINE COMPLETED SUCCESSFULLY!")
-    print(f"📊 Final dataset saved to: ../data/vulnerabilities.csv")
+    print(f"📊 Final dataset saved to: ../data/vulnerabilities.parquet")
     print(f"⏱️  Total runtime: {hours:02d}:{minutes:02d}:{seconds:02d}")
     print(f"\nYou can now run the modeling scripts:")
-    print(f"  python ../modeling/data_cleaning.py")
-    print(f"  python ../modeling/baseline_model.py")
+    print(f"  python ../modeling/baseline_abel_koshy_07_25.py")
 
 if __name__ == "__main__":
     main() 

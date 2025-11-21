@@ -3,11 +3,13 @@ import json
 import pandas as pd
 
 # Load the merged vulnerabilities file - adjusted path for subdirectory
-if not os.path.exists('../data/vulnerabilities.csv'):
-    print("Error: ../data/vulnerabilities.csv not found. Please run merge_files.py first.")
+if os.path.exists('../data/vulnerabilities.parquet'):
+    df = pd.read_parquet('../data/vulnerabilities.parquet')
+elif os.path.exists('../data/vulnerabilities.csv'):
+    df = pd.read_csv('../data/vulnerabilities.csv', low_memory=False)
+else:
+    print("Error: ../data/vulnerabilities.parquet or .csv not found. Please run merge_files.py first.")
     exit(1)
-
-df = pd.read_csv('../data/vulnerabilities.csv', low_memory=False)
 target_cves = set(df['id'])
 cve_descriptions = {}
 
@@ -46,6 +48,6 @@ for year in range(1999, 2026):
 df['description'] = df['id'].map(cve_descriptions)
 
 # Save the updated dataset with descriptions - adjusted path for subdirectory
-df.to_csv('../data/vulnerabilities.csv', index=False)
-print(f"\nUpdated dataset with descriptions saved to: ../data/vulnerabilities.csv")
+df.to_parquet('../data/vulnerabilities.parquet', engine='pyarrow', compression='snappy', index=False)
+print(f"\nUpdated dataset with descriptions saved to: ../data/vulnerabilities.parquet")
 print(f"Found descriptions for {len(cve_descriptions)} out of {len(target_cves)} CVEs") 
