@@ -1,0 +1,27 @@
+{
+  "models": {
+    "CVSS-only": {
+      "roc_auc": 0.8465033428181461,
+      "average_precision": 0.056822378723072574,
+      "f1_score": 0.09090909090909091
+    },
+    "Embedding-only": {
+      "roc_auc": 0.8644354223055035,
+      "average_precision": 0.028469432418555023,
+      "f1_score": 0.04426002766251729
+    },
+    "Hybrid": {
+      "roc_auc": 0.9121868276771462,
+      "average_precision": 0.12272761285944787,
+      "f1_score": 0.10550458715596331
+    }
+  },
+  "best_model": "Hybrid",
+  "best_roc_auc": 0.9121868276771462,
+  "dataset": {
+    "train_size": 185871,
+    "test_size": 9651,
+    "train_exploited": 1104,
+    "test_exploited": 45
+  }
+}
