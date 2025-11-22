@@ -325,6 +325,85 @@ plt.savefig(comp_path, dpi=300, bbox_inches='tight')
 print(f"   Saved: {comp_path}")
 plt.close()
 
+# 5. COMBINED ROC Curve (Both models on one plot)
+print("\n📊 Generating combined visualizations...")
+
+fig, ax = plt.subplots(figsize=(10, 8))
+
+# Plot both models
+lr_fpr, lr_tpr, _ = roc_curve(y_test, lr_y_proba)
+rf_fpr, rf_tpr, _ = roc_curve(y_test, rf_y_proba)
+
+ax.plot(lr_fpr, lr_tpr, label=f'Logistic Regression (AUC = {lr_roc_auc:.3f})', 
+        linewidth=2.5, color='steelblue')
+ax.plot(rf_fpr, rf_tpr, label=f'Random Forest (AUC = {rf_roc_auc:.3f})', 
+        linewidth=2.5, color='seagreen')
+ax.plot([0, 1], [0, 1], 'k--', label='Random Classifier', linewidth=1)
+
+ax.set_xlabel('False Positive Rate', fontsize=13)
+ax.set_ylabel('True Positive Rate', fontsize=13)
+ax.set_title(f'ROC Curve Comparison - {embedding_type.upper()} Embeddings', 
+             fontsize=15, fontweight='bold')
+ax.legend(loc='lower right', fontsize=11)
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+roc_combined_path = f'embedding_pipeline/visualizations/roc_curve_combined_{embedding_type}.png'
+plt.savefig(roc_combined_path, dpi=300, bbox_inches='tight')
+print(f"   Saved: {roc_combined_path}")
+plt.close()
+
+# 6. Best Model Confusion Matrix (Single, larger plot)
+# Determine best model
+best_model_name = 'Logistic Regression' if lr_roc_auc > rf_roc_auc else 'Random Forest'
+best_cm = lr_cm if lr_roc_auc > rf_roc_auc else rf_cm
+best_roc = max(lr_roc_auc, rf_roc_auc)
+best_ap = lr_avg_precision if lr_roc_auc > rf_roc_auc else rf_avg_precision
+best_f1 = lr_f1 if lr_roc_auc > rf_roc_auc else rf_f1
+
+fig, ax = plt.subplots(figsize=(10, 8))
+
+sns.heatmap(best_cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=True,
+            xticklabels=['Not Exploited', 'Exploited'],
+            yticklabels=['Not Exploited', 'Exploited'],
+            annot_kws={'size': 16, 'weight': 'bold'},
+            linewidths=2, linecolor='white')
+
+ax.set_xlabel('Predicted Label', fontsize=14, fontweight='bold')
+ax.set_ylabel('True Label', fontsize=14, fontweight='bold')
+ax.set_title(f'Confusion Matrix - Best Model ({best_model_name})\n'
+             f'{embedding_type.upper()} Embeddings | ROC-AUC: {best_roc:.4f}',
+             fontsize=15, fontweight='bold', pad=15)
+
+# Add performance metrics as text
+tn, fp, fn, tp = best_cm.ravel()
+sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+
+metrics_text = f"""
+Performance Metrics:
+• ROC-AUC: {best_roc:.4f}
+• Avg Precision: {best_ap:.4f}
+• F1 Score: {best_f1:.4f}
+• Recall: {sensitivity:.2%}
+• Precision: {precision:.2%}
+• Specificity: {specificity:.2%}
+
+Exploited CVEs detected: {tp}/{tp + fn}
+False alarms: {fp}/{fp + tn}
+"""
+
+plt.text(1.15, 0.5, metrics_text, transform=ax.transAxes,
+         fontsize=11, verticalalignment='center',
+         bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.3))
+
+plt.tight_layout()
+cm_best_path = f'embedding_pipeline/visualizations/confusion_matrix_best_{embedding_type}.png'
+plt.savefig(cm_best_path, dpi=300, bbox_inches='tight')
+print(f"   Saved: {cm_best_path}")
+plt.close()
+
 # ============================================================================
 # SAVE RESULTS
 # ============================================================================

@@ -1,27 +1,27 @@
 {
   "models": {
     "CVSS-only": {
-      "roc_auc": 0.8465033428181461,
-      "average_precision": 0.056822378723072574,
-      "f1_score": 0.09090909090909091
+      "roc_auc": 0.8004849113479406,
+      "average_precision": 0.026665735894868724,
+      "f1_score": 0.03383878691141261
     },
     "Embedding-only": {
-      "roc_auc": 0.8644354223055035,
-      "average_precision": 0.028469432418555023,
-      "f1_score": 0.04426002766251729
+      "roc_auc": 0.8442242471113283,
+      "average_precision": 0.02607869635880223,
+      "f1_score": 0.03601440576230492
     },
     "Hybrid": {
-      "roc_auc": 0.9121868276771462,
-      "average_precision": 0.12272761285944787,
-      "f1_score": 0.10550458715596331
+      "roc_auc": 0.8819261687441897,
+      "average_precision": 0.07856861104499202,
+      "f1_score": 0.05288888888888889
     }
   },
   "best_model": "Hybrid",
-  "best_roc_auc": 0.9121868276771462,
+  "best_roc_auc": 0.8819261687441897,
   "dataset": {
-    "train_size": 185871,
-    "test_size": 9651,
-    "train_exploited": 1104,
-    "test_exploited": 45
+    "train_size": 150097,
+    "test_size": 45425,
+    "train_exploited": 960,
+    "test_exploited": 189
   }
 }

@@ -1,0 +1,42 @@
+{
+  "embedding_type": "openai",
+  "timestamp": "2025-11-22T01:43:57.990534",
+  "dataset": {
+    "train_size": 273981,
+    "test_size": 56811,
+    "train_exploited": 1829,
+    "test_exploited": 216,
+    "train_years": "2015-2023",
+    "test_years": "2024+"
+  },
+  "logistic_regression": {
+    "roc_auc": 0.8791752968623717,
+    "average_precision": 0.04345189638147727,
+    "f1_score": 0.05221932114882506,
+    "confusion_matrix": [
+      [
+        51962,
+        4633
+      ],
+      [
+        86,
+        130
+      ]
+    ]
+  },
+  "random_forest": {
+    "roc_auc": 0.8779921011213527,
+    "average_precision": 0.047406660379353316,
+    "f1_score": 0.08152173913043478,
+    "confusion_matrix": [
+      [
+        56458,
+        137
+      ],
+      [
+        201,
+        15
+      ]
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "model_type": "Logistic Regression",
+  "features": "OpenAI Embeddings (1536-dim) + CVSS Features (38-dim)",
+  "total_features": 1574,
+  "cvss_features": 38,
+  "embedding_features": 1536,
+  "train_years": "2015-2023",
+  "test_years": "2024-2025",
+  "dataset": {
+    "train_size": 150097,
+    "test_size": 45425,
+    "train_exploited": 960,
+    "test_exploited": 189,
+    "train_prevalence": 0.006395864007941531,
+    "test_prevalence": 0.004160704457897633
+  },
+  "performance": {
+    "roc_auc": 0.9196533547050834,
+    "average_precision": 0.09914463389746543,
+    "f1_score": 0.08262633714496495,
+    "sensitivity_recall": 0.5925925925925926,
+    "specificity": 0.9467238482624458,
+    "precision": 0.04440919904837431
+  },
+  "confusion_matrix": {
+    "true_negatives": 42826,
+    "false_positives": 2410,
+    "false_negatives": 77,
+    "true_positives": 112
+  },
+  "config": {
+    "cvss_data_path": "data/data.csv",
+    "openai_embeddings_path": "embedding_pipeline/data/embeddings_openai.npz",
+    "openai_metadata_path": "embedding_pipeline/data/metadata_openai.csv",
+    "kev_catalog_path": "data/known_exploited_vulnerabilities.csv",
+    "output_dir": "embedding_pipeline/final_hybrid_results",
+    "visualizations_dir": "embedding_pipeline/final_hybrid_results/visualizations",
+    "train_years": [
+      2015,
+      2023
+    ],
+    "test_years": [
+      2024,
+      2025
+    ],
+    "random_state": 42
+  }
+}

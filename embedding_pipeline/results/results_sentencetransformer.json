@@ -1,41 +1,41 @@
 {
   "embedding_type": "sentencetransformer",
-  "timestamp": "2025-11-18T16:57:28.750038",
+  "timestamp": "2025-11-22T01:29:02.348496",
   "dataset": {
-    "train_size": 317341,
-    "test_size": 13451,
-    "train_exploited": 1991,
-    "test_exploited": 54,
-    "train_years": "2015-2024",
-    "test_year": "2025"
+    "train_size": 273981,
+    "test_size": 56811,
+    "train_exploited": 1829,
+    "test_exploited": 216,
+    "train_years": "2015-2023",
+    "test_years": "2024+"
   },
   "logistic_regression": {
-    "roc_auc": 0.8720132202068456,
-    "average_precision": 0.02312450570709436,
-    "f1_score": 0.03954802259887006,
+    "roc_auc": 0.8428813973882001,
+    "average_precision": 0.022225152490687485,
+    "f1_score": 0.0338716913414087,
     "confusion_matrix": [
       [
-        11716,
-        1681
+        48046,
+        8549
       ],
       [
-        19,
-        35
+        65,
+        151
       ]
     ]
   },
   "random_forest": {
-    "roc_auc": 0.8880173560139223,
-    "average_precision": 0.058297104375103104,
-    "f1_score": 0.024691358024691357,
+    "roc_auc": 0.8447607758832248,
+    "average_precision": 0.03944141067327194,
+    "f1_score": 0.08108108108108109,
     "confusion_matrix": [
       [
-        13371,
-        26
+        56456,
+        139
       ],
       [
-        53,
-        1
+        201,
+        15
       ]
     ]
   }
